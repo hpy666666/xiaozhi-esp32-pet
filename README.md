@@ -8,7 +8,24 @@
 
 **增加了4舵机控制系统和动态表情系统，让小智真正"动"起来！**
 
-![项目封面](docs/xiaozhi-pet-cover.jpg)
+## 📸 项目展示
+
+<div align="center">
+
+### 整体外观
+![项目封面](docs/pet/cover.jpg)
+
+### 硬件细节
+<table>
+  <tr>
+    <td><img src="docs/pet/hardware-left.jpg" width="360"/><br/>左侧视角 - 舵机布局</td>
+    <td><img src="docs/pet/hardware-right.jpg" width="360"/><br/>右侧视角 - OLED屏幕</td>
+  </tr>
+</table>
+
+> 💡 **提示**: 点击图片可查看大图
+
+</div>
 
 ---
 
@@ -447,10 +464,11 @@ idf.py -p COM5 -b 115200 monitor
 
 ## 🙏 致谢
 
-- **原项目作者**: [78/虾哥](https://github.com/78) - [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32)
-- **开发框架**: [ESP-IDF](https://github.com/espressif/esp-idf) by Espressif
+- **原项目作者**: [78/虾哥](https://github.com/78) - [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) 开源项目
+- **开发框架**: [ESP-IDF](https://github.com/espressif/esp-idf) by Espressif Systems
 - **图形库**: [LVGL](https://lvgl.io/) - 轻量级嵌入式图形库
-- **灵感来源**: 各种桌面宠物机器人项目
+- **PCB打板**: [嘉立创](https://www.jlc.com/) - 感谢嘉立创提供的免费打板服务
+- **灵感来源**: 各种桌面宠物机器人和开源硬件社区
 
 ---
 
