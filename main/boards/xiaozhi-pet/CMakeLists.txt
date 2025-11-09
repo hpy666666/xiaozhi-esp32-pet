@@ -1,0 +1,15 @@
+idf_component_register(
+    SRCS
+        "xiaozhi_pet_board.cc"
+        "../../pet/pet_servo.cc"
+        "../../pet/pet_actions.cc"
+        "../../pet/pet_controller.cc"
+    INCLUDE_DIRS
+        "."
+        "../.."
+    REQUIRES
+        driver
+        esp_lcd
+        lvgl
+        freertos
+)
