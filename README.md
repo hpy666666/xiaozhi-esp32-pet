@@ -1,161 +1,472 @@
-# An MCP-based Chatbot | 一个基于 MCP 的聊天机器人
+# Xiaozhi ESP32 Pet - 桌面宠物机器人 🐾
 
-（中文 | [English](README_en.md) | [日本語](README_ja.md)）
+> 基于 [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) 的桌面宠物机器人改进版本
 
-## 视频
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.4+-blue.svg)](https://github.com/espressif/esp-idf)
+[![LVGL](https://img.shields.io/badge/LVGL-v9-green.svg)](https://lvgl.io/)
 
-👉 [人类：给 AI 装摄像头 vs AI：当场发现主人三天没洗头【bilibili】](https://www.bilibili.com/video/BV1bpjgzKEhd/)
+**增加了4舵机控制系统和动态表情系统，让小智真正"动"起来！**
 
-👉 [手工打造你的 AI 女友，新手入门教程【bilibili】](https://www.bilibili.com/video/BV1XnmFYLEJN/)
+![项目封面](docs/xiaozhi-pet-cover.jpg)
 
-## 介绍
+---
 
-这是一个由虾哥开源的 ESP32 项目，以 MIT 许可证发布，允许任何人免费使用，或用于商业用途。
+## 📖 目录
 
-我们希望通过这个项目，能够帮助大家了解 AI 硬件开发，将当下飞速发展的大语言模型应用到实际的硬件设备中。
+- [新增特性](#-新增特性)
+- [硬件需求](#-硬件需求)
+- [快速开始](#-快速开始)
+- [动画制作工具](#-动画制作工具)
+- [常见问题](#-常见问题)
+- [贡献指南](#-贡献指南)
+- [致谢](#-致谢)
 
-如果你有任何想法或建议，请随时提出 Issues 或加入 QQ 群：1011329060
+---
 
-### 基于 MCP 控制万物
+## ✨ 新增特性
 
-小智 AI 聊天机器人作为一个语音交互入口，利用 Qwen / DeepSeek 等大模型的 AI 能力，通过 MCP 协议实现多端控制。
+相比原版 [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32)，本项目新增了以下功能：
 
-![通过MCP控制万物](docs/mcp-based-graph.jpg)
+### 🤖 舵机控制系统
+- ✅ **4个舵机驱动**: 使用ESP32的LEDC PWM控制4个SG90舵机
+- ✅ **13种预定义动作**: 站立、趴下、坐下、前进、后退、左转、右转、挥手、摇头、点头等
+- ✅ **MCP协议集成**: 通过语音指令控制宠物动作
+- ✅ **分时启动优化**: 解决多舵机同时启动的电流冲击问题
 
-### 已实现功能
+### 😊 动态表情系统
+- ✅ **慵懒眨眼GIF动画**: 基于LVGL v9的GIF动画，5.8秒循环，70帧
+- ✅ **4种专业眨眼曲线**:
+  - `lazy` - 打瞌睡效果（分段式，有故事感）
+  - `gaussian` - 高斯分布（最真实，符合人眼运动）
+  - `sine` - 正弦曲线（最平滑，经典动画）
+  - `smootherstep` - 游戏引擎标准曲线
+- ✅ **18种静态位图表情**: 配合设备状态和宠物动作自动切换
+- ✅ **LVGL Canvas显示**: 表情与UI共存，解决反色问题
 
-- Wi-Fi / ML307 Cat.1 4G
-- 离线语音唤醒 [ESP-SR](https://github.com/espressif/esp-sr)
-- 支持两种通信协议（[Websocket](docs/websocket.md) 或 MQTT+UDP）
-- 采用 OPUS 音频编解码
-- 基于流式 ASR + LLM + TTS 架构的语音交互
-- 声纹识别，识别当前说话人的身份 [3D Speaker](https://github.com/modelscope/3D-Speaker)
-- OLED / LCD 显示屏，支持表情显示
-- 电量显示与电源管理
-- 支持多语言（中文、英文、日文）
-- 支持 ESP32-C3、ESP32-S3、ESP32-P4 芯片平台
-- 通过设备端 MCP 实现设备控制（音量、灯光、电机、GPIO 等）
-- 通过云端 MCP 扩展大模型能力（智能家居控制、PC桌面操作、知识搜索、邮件收发等）
+### ⚡ 电源管理优化
+- ✅ **MT3608升压方案**: 3.7V锂电池升压至5V供电
+- ✅ **舵机分时启动**: 间隔50ms依次启动，避免电压跌落
+- ✅ **电流优化策略**: 峰值电流从2300mA降至1300mA
+- ✅ **Brownout保护**: 防止因电流过大导致系统重启
 
-## 硬件
+---
 
-### 面包板手工制作实践
+## 🛠️ 硬件需求
 
-详见飞书文档教程：
+### 必需硬件
 
-👉 [《小智 AI 聊天机器人百科全书》](https://ccnphfhqs21z.feishu.cn/wiki/F5krwD16viZoF0kKkvDcrZNYnhb?from=from_copylink)
+| 组件 | 型号 | 数量 | 说明 |
+|------|------|------|------|
+| 主控芯片 | ESP32-S3-N16R8 | 1 | 16MB Flash + 8MB PSRAM |
+| OLED显示屏 | SH1106 (128×64) | 1 | I2C接口 |
+| 麦克风 | INMP441 | 1 | I2S数字麦克风 |
+| 音频功放 | MAX98357A | 1 | I2S功放 |
+| 舵机 | SG90 | 4 | 微型舵机 |
+| 升压模块 | MT3608 | 1 | 3.7V→5V, 2A+ |
+| 锂电池 | 18650 | 1 | 3.7V, 2000mAh+ |
+| 充电模块 | TP4056 | 1 | 1A充电 |
 
-面包板效果图如下：
+### 引脚定义
 
-![面包板效果图](docs/v1/wiring2.jpg)
+详见 [`main/boards/xiaozhi-pet/config.h`](main/boards/xiaozhi-pet/config.h)
 
-### 支持 70 多个开源硬件（仅展示部分）
+```c
+// 音频输出 (I2S)
+AUDIO_OUTPUT_BCLK_PIN = 15
+AUDIO_OUTPUT_WS_PIN = 16
+AUDIO_OUTPUT_DOUT_PIN = 7
 
-- <a href="https://oshwhub.com/li-chuang-kai-fa-ban/li-chuang-shi-zhan-pai-esp32-s3-kai-fa-ban" target="_blank" title="立创·实战派 ESP32-S3 开发板">立创·实战派 ESP32-S3 开发板</a>
-- <a href="https://github.com/espressif/esp-box" target="_blank" title="乐鑫 ESP32-S3-BOX3">乐鑫 ESP32-S3-BOX3</a>
-- <a href="https://docs.m5stack.com/zh_CN/core/CoreS3" target="_blank" title="M5Stack CoreS3">M5Stack CoreS3</a>
-- <a href="https://docs.m5stack.com/en/atom/Atomic%20Echo%20Base" target="_blank" title="AtomS3R + Echo Base">M5Stack AtomS3R + Echo Base</a>
-- <a href="https://gf.bilibili.com/item/detail/1108782064" target="_blank" title="神奇按钮 2.4">神奇按钮 2.4</a>
-- <a href="https://www.waveshare.net/shop/ESP32-S3-Touch-AMOLED-1.8.htm" target="_blank" title="微雪电子 ESP32-S3-Touch-AMOLED-1.8">微雪电子 ESP32-S3-Touch-AMOLED-1.8</a>
-- <a href="https://github.com/Xinyuan-LilyGO/T-Circle-S3" target="_blank" title="LILYGO T-Circle-S3">LILYGO T-Circle-S3</a>
-- <a href="https://oshwhub.com/tenclass01/xmini_c3" target="_blank" title="虾哥 Mini C3">虾哥 Mini C3</a>
-- <a href="https://oshwhub.com/movecall/cuican-ai-pendant-lights-up-y" target="_blank" title="Movecall CuiCan ESP32S3">璀璨·AI 吊坠</a>
-- <a href="https://github.com/WMnologo/xingzhi-ai" target="_blank" title="无名科技Nologo-星智-1.54">无名科技 Nologo-星智-1.54TFT</a>
-- <a href="https://www.seeedstudio.com/SenseCAP-Watcher-W1-A-p-5979.html" target="_blank" title="SenseCAP Watcher">SenseCAP Watcher</a>
-- <a href="https://www.bilibili.com/video/BV1BHJtz6E2S/" target="_blank" title="ESP-HI 超低成本机器狗">ESP-HI 超低成本机器狗</a>
+// 麦克风输入 (I2S)
+AUDIO_INPUT_BCLK_PIN = 5
+AUDIO_INPUT_WS_PIN = 4
+AUDIO_INPUT_DIN_PIN = 6
 
-<div style="display: flex; justify-content: space-between;">
-  <a href="docs/v1/lichuang-s3.jpg" target="_blank" title="立创·实战派 ESP32-S3 开发板">
-    <img src="docs/v1/lichuang-s3.jpg" width="240" />
-  </a>
-  <a href="docs/v1/espbox3.jpg" target="_blank" title="乐鑫 ESP32-S3-BOX3">
-    <img src="docs/v1/espbox3.jpg" width="240" />
-  </a>
-  <a href="docs/v1/m5cores3.jpg" target="_blank" title="M5Stack CoreS3">
-    <img src="docs/v1/m5cores3.jpg" width="240" />
-  </a>
-  <a href="docs/v1/atoms3r.jpg" target="_blank" title="AtomS3R + Echo Base">
-    <img src="docs/v1/atoms3r.jpg" width="240" />
-  </a>
-  <a href="docs/v1/magiclick.jpg" target="_blank" title="神奇按钮 2.4">
-    <img src="docs/v1/magiclick.jpg" width="240" />
-  </a>
-  <a href="docs/v1/waveshare.jpg" target="_blank" title="微雪电子 ESP32-S3-Touch-AMOLED-1.8">
-    <img src="docs/v1/waveshare.jpg" width="240" />
-  </a>
-  <a href="docs/v1/lilygo-t-circle-s3.jpg" target="_blank" title="LILYGO T-Circle-S3">
-    <img src="docs/v1/lilygo-t-circle-s3.jpg" width="240" />
-  </a>
-  <a href="docs/v1/xmini-c3.jpg" target="_blank" title="虾哥 Mini C3">
-    <img src="docs/v1/xmini-c3.jpg" width="240" />
-  </a>
-  <a href="docs/v1/movecall-cuican-esp32s3.jpg" target="_blank" title="CuiCan">
-    <img src="docs/v1/movecall-cuican-esp32s3.jpg" width="240" />
-  </a>
-  <a href="docs/v1/wmnologo_xingzhi_1.54.jpg" target="_blank" title="无名科技Nologo-星智-1.54">
-    <img src="docs/v1/wmnologo_xingzhi_1.54.jpg" width="240" />
-  </a>
-  <a href="docs/v1/sensecap_watcher.jpg" target="_blank" title="SenseCAP Watcher">
-    <img src="docs/v1/sensecap_watcher.jpg" width="240" />
-  </a>
-  <a href="docs/v1/esp-hi.jpg" target="_blank" title="ESP-HI 超低成本机器狗">
-    <img src="docs/v1/esp-hi.jpg" width="240" />
-  </a>
-</div>
+// OLED显示屏 (I2C)
+OLED_SDA_PIN = 41
+OLED_SCL_PIN = 42
 
-## 软件
+// 舵机控制 (PWM)
+SERVO_PIN_1 = 9   // 左前腿
+SERVO_PIN_2 = 10  // 右前腿
+SERVO_PIN_3 = 11  // 左后腿
+SERVO_PIN_4 = 12  // 右后腿
+```
 
-### 固件烧录
+### 电路设计要点
 
-新手第一次操作建议先不要搭建开发环境，直接使用免开发环境烧录的固件。
+- 每个舵机旁添加 **220μF电解电容**
+- OLED I2C需要 **4.7kΩ上拉电阻** 到3.3V
+- 麦克风和扬声器保持 **5cm以上距离**
+- 舵机信号线建议添加 **10kΩ上拉电阻**
 
-固件默认接入 [xiaozhi.me](https://xiaozhi.me) 官方服务器，个人用户注册账号可以免费使用 Qwen 实时模型。
+---
 
-👉 [新手烧录固件教程](https://ccnphfhqs21z.feishu.cn/wiki/Zpz4wXBtdimBrLk25WdcXzxcnNS)
+## 🚀 快速开始
 
-### 开发环境
+### 方式1：使用预编译固件（推荐新手）
 
-- Cursor 或 VSCode
-- 安装 ESP-IDF 插件，选择 SDK 版本 5.4 或以上
-- Linux 比 Windows 更好，编译速度快，也免去驱动问题的困扰
-- 本项目使用 Google C++ 代码风格，提交代码时请确保符合规范
+#### 1. 下载固件
 
-### 开发者文档
+访问 [Releases 页面](https://github.com/hpy666666/xiaozhi-esp32-pet/releases) 下载最新的 `v1.9.2_xiaozhi-pet.zip`
 
-- [自定义开发板指南](main/boards/README.md) - 学习如何为小智 AI 创建自定义开发板
-- [MCP 协议物联网控制用法说明](docs/mcp-usage.md) - 了解如何通过 MCP 协议控制物联网设备
-- [MCP 协议交互流程](docs/mcp-protocol.md) - 设备端 MCP 协议的实现方式
-- [MQTT + UDP 混合通信协议文档](docs/mqtt-udp.md)
-- [一份详细的 WebSocket 通信协议文档](docs/websocket.md)
+#### 2. 解压文件
 
-## 大模型配置
+```
+v1.9.2_xiaozhi-pet/
+├── bootloader.bin
+├── partition-table.bin
+├── xiaozhi.bin
+└── flash_download.txt  (烧录说明)
+```
 
-如果你已经拥有一个小智 AI 聊天机器人设备，并且已接入官方服务器，可以登录 [xiaozhi.me](https://xiaozhi.me) 控制台进行配置。
+#### 3. 烧录固件
 
-👉 [后台操作视频教程（旧版界面）](https://www.bilibili.com/video/BV1jUCUY2EKM/)
+**Windows用户** - 使用 ESP Flash Download Tool:
+1. 下载工具: [Flash Download Tool](https://www.espressif.com/en/support/download/other-tools)
+2. 选择芯片: ESP32-S3
+3. 设置烧录地址:
+   ```
+   bootloader.bin       -> 0x0
+   partition-table.bin  -> 0x8000
+   xiaozhi.bin          -> 0x10000
+   ```
+4. 选择串口（如COM5），波特率921600
+5. 点击 START 开始烧录
 
-## 相关开源项目
+**跨平台用户** - 使用 esptool.py:
+```bash
+pip install esptool
 
-在个人电脑上部署服务器，可以参考以下第三方开源的项目：
+esptool.py --chip esp32s3 --port COM5 --baud 921600 \
+  write_flash 0x0 bootloader.bin \
+  0x8000 partition-table.bin \
+  0x10000 xiaozhi.bin
+```
 
-- [xinnan-tech/xiaozhi-esp32-server](https://github.com/xinnan-tech/xiaozhi-esp32-server) Python 服务器
-- [joey-zhou/xiaozhi-esp32-server-java](https://github.com/joey-zhou/xiaozhi-esp32-server-java) Java 服务器
-- [AnimeAIChat/xiaozhi-server-go](https://github.com/AnimeAIChat/xiaozhi-server-go) Golang 服务器
+#### 4. 配置网络
 
-使用小智通信协议的第三方客户端项目：
+首次启动后，设备会创建Wi-Fi热点:
+- **SSID**: `Xiaozhi_XXXXXX`
+- **密码**: `12345678`
 
-- [huangjunsen0406/py-xiaozhi](https://github.com/huangjunsen0406/py-xiaozhi) Python 客户端
-- [TOM88812/xiaozhi-android-client](https://github.com/TOM88812/xiaozhi-android-client) Android 客户端
-- [100askTeam/xiaozhi-linux](http://github.com/100askTeam/xiaozhi-linux) 百问科技提供的 Linux 客户端
-- [78/xiaozhi-sf32](https://github.com/78/xiaozhi-sf32) 思澈科技的蓝牙芯片固件
-- [QuecPython/solution-xiaozhiAI](https://github.com/QuecPython/solution-xiaozhiAI) 移远提供的 QuecPython 固件
+连接热点后访问 `http://192.168.4.1` 配置网络和服务器。
 
-## Star History
+---
 
-<a href="https://star-history.com/#78/xiaozhi-esp32&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=78/xiaozhi-esp32&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=78/xiaozhi-esp32&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=78/xiaozhi-esp32&type=Date" />
- </picture>
-</a>
+### 方式2：自行编译（开发者）
+
+#### 1. 安装 ESP-IDF
+
+**Windows**:
+```bash
+# 下载并安装 ESP-IDF v5.4+
+# 参考: https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/get-started/windows-setup.html
+```
+
+**Linux/macOS**:
+```bash
+git clone -b v5.4 --recursive https://github.com/espressif/esp-idf.git
+cd esp-idf
+./install.sh esp32s3
+. ./export.sh
+```
+
+#### 2. 克隆项目
+
+```bash
+git clone https://github.com/hpy666666/xiaozhi-esp32-pet.git
+cd xiaozhi-esp32-pet
+```
+
+#### 3. 编译和烧录
+
+```bash
+# 使用release脚本编译
+python scripts/release.py xiaozhi-pet
+
+# 或手动编译
+idf.py set-target esp32s3
+idf.py build
+
+# 烧录到设备
+idf.py -p COM5 flash monitor
+```
+
+退出监视器: `Ctrl + ]`
+
+---
+
+## 🎨 动画制作工具
+
+项目包含完整的动画生成工具，可以自己制作眨眼动画！
+
+### 工具链
+
+```
+Python脚本生成MP4 → ezgif转GIF → LVGL转C数组 → 集成到项目
+```
+
+### 第1步：生成MP4动画
+
+使用项目中的 `generate_lazy_blink.py`（需要Python 3.7+）:
+
+```bash
+# 安装依赖
+pip install pillow opencv-python numpy
+
+# 生成不同曲线的动画
+python generate_lazy_blink.py lazy          # 打瞌睡曲线
+python generate_lazy_blink.py gaussian      # 高斯曲线（推荐）
+python generate_lazy_blink.py sine          # 正弦曲线
+python generate_lazy_blink.py smootherstep  # 游戏标准曲线
+```
+
+生成的MP4文件:
+```
+lazy_blink_lazy.mp4
+lazy_blink_gaussian.mp4
+lazy_blink_sine.mp4
+lazy_blink_smootherstep.mp4
+```
+
+### 第2步：转换为GIF
+
+访问 **[ezgif.com - Video to GIF](https://ezgif.com/video-to-gif)**
+
+1. 上传生成的 `.mp4` 文件
+2. 设置参数:
+   - **Size**: `128x64` (必须匹配OLED分辨率)
+   - **Frame rate**: `12 fps`
+   - **Method**: `Optimize` (压缩文件大小)
+3. 点击 "Convert to GIF"
+4. 下载生成的 `.gif` 文件
+
+### 第3步：转换为C数组
+
+访问 **[LVGL Image Converter](https://lvgl.io/tools/imageconverter)**
+
+1. 上传 `.gif` 文件
+2. 设置参数:
+   - **Name**: `lazy_blink_gif`
+   - **Color format**: `CF_RAW` (GIF动画必须用RAW)
+   - **Output format**: `C array`
+   - **LVGL version**: `v9` (重要！)
+3. 点击 "Convert"
+4. 下载生成的 `.c` 文件
+
+### 第4步：集成到项目
+
+1. 将下载的 `.c` 文件重命名为 `lazy_blink_gif.c`
+2. 复制到 `main/display/` 目录
+3. 修改文件格式为LVGL v9（如需要）:
+
+```c
+// 确保使用v9格式
+const lv_image_dsc_t lazy_blink_gif = {
+    .header = {
+        .cf = LV_COLOR_FORMAT_RAW,  // v9格式
+        .w = 128,
+        .h = 64,
+    },
+    .data_size = 6873,
+    .data = lazy_blink_gif_map,
+};
+```
+
+4. 重新编译烧录即可
+
+---
+
+## 🔧 开发工具和资源
+
+### 在线工具
+
+| 工具 | 用途 | 链接 |
+|------|------|------|
+| ezgif | MP4转GIF | https://ezgif.com/video-to-gif |
+| LVGL Image Converter | GIF转C数组 | https://lvgl.io/tools/imageconverter |
+| image2lcd | 位图转数组（备用） | http://www.image2lcd.com/ |
+| ESP Flash Tool | Windows烧录工具 | https://www.espressif.com/en/support/download/other-tools |
+
+### 开发文档
+
+| 文档 | 链接 |
+|------|------|
+| ESP-IDF 官方文档 | https://docs.espressif.com/projects/esp-idf/ |
+| LVGL v9 文档 | https://docs.lvgl.io/master/ |
+| xiaozhi-esp32 原项目 | https://github.com/78/xiaozhi-esp32 |
+| 自定义开发板指南 | [main/boards/README.md](main/boards/README.md) |
+| MCP协议文档 | [docs/mcp-protocol.md](docs/mcp-protocol.md) |
+
+### Python依赖
+
+```bash
+# 动画生成工具依赖
+pip install pillow        # 图像处理
+pip install opencv-python # 视频生成
+pip install numpy         # 数值计算
+```
+
+---
+
+## 📂 项目结构
+
+```
+xiaozhi-esp32-pet/
+│
+├── main/
+│   ├── boards/
+│   │   └── xiaozhi-pet/          # 🌟 宠物版硬件配置
+│   ├── pet/                       # 🌟 舵机控制模块
+│   │   ├── pet_servo.cc/h         # 舵机PWM驱动
+│   │   ├── pet_actions.cc/h       # 13种动作库
+│   │   └── pet_controller.cc/h    # MCP协议集成
+│   ├── display/                   # 🌟 显示模块
+│   │   ├── oled_display.cc/h      # OLED驱动
+│   │   ├── emotion_bitmaps.c/h    # 18种静态表情
+│   │   ├── emotion_manager.c/h    # 表情映射
+│   │   └── lazy_blink_gif.c       # 🌟 慵懒眨眼GIF
+│   ├── audio/                     # 音频模块
+│   ├── network/                   # 网络通信
+│   └── application.cc             # 主程序
+│
+├── scripts/
+│   └── release.py                 # 编译打包脚本
+│
+├── docs/                          # 文档和图片
+├── generate_lazy_blink.py         # 🌟 动画生成工具
+└── README.md                      # 本文件
+```
+
+---
+
+## 🐛 常见问题
+
+### Q1: 连接两个以上舵机就自动重启？
+
+**原因**: 电源电流不足，多个舵机同时启动导致电压跌落触发brownout。
+
+**解决方案**:
+1. ✅ 本项目已实现**分时启动优化**（间隔50ms）
+2. 确保MT3608升压模块输出能力 ≥ 2A
+3. 每个舵机旁添加220μF电解电容
+4. 检查电池容量（建议 ≥ 2000mAh）
+
+### Q2: OLED显示屏不显示或反色？
+
+**检查清单**:
+- [ ] I2C引脚是否接对（SDA/SCL）
+- [ ] 是否添加4.7kΩ上拉电阻到3.3V
+- [ ] I2C地址是否正确（SH1106通常是0x3C）
+- [ ] 电源是否稳定（3.3V）
+
+**反色问题**: 本项目已修复LVGL Canvas反色问题，确保使用最新代码。
+
+### Q3: GIF动画不播放？
+
+**检查步骤**:
+1. 确认GIF文件格式为 `CF_RAW`（不是CF_INDEXED）
+2. 确认使用LVGL v9格式（`lv_image_dsc_t`）
+3. 检查sdkconfig中是否启用GIF支持:
+   ```
+   CONFIG_LV_USE_GIF=y
+   ```
+4. 重新编译完整项目
+
+### Q4: 如何修改动作？
+
+编辑 `main/pet/pet_actions.cc`，修改动作序列中的舵机角度:
+
+```cpp
+// 示例：修改挥手动作
+ActionSequence wave_action = {
+    {90, 45, 90, 90},   // 第1帧：右前腿抬起
+    {90, 90, 90, 90},   // 第2帧：放下
+    {90, 45, 90, 90},   // 第3帧：再次抬起
+    {90, 90, 90, 90},   // 第4帧：放下
+};
+```
+
+### Q5: 烧录后无法连接串口监视器？
+
+**Windows用户**:
+1. 安装CH340或CP2102驱动
+2. 检查设备管理器中的COM端口号
+3. 尝试更换USB线（需要支持数据传输）
+
+**所有平台**:
+```bash
+# 查看可用端口
+idf.py monitor --list-ports
+
+# 指定端口和波特率
+idf.py -p COM5 -b 115200 monitor
+```
+
+---
+
+## 🤝 贡献指南
+
+欢迎提交Issue和Pull Request！
+
+### 开发规范
+- 使用Google C++代码风格
+- 添加清晰的注释（中英文均可）
+- 测试后再提交
+- 提交信息格式: `feat:` / `fix:` / `docs:` / `refactor:`
+
+### 提交PR步骤
+1. Fork本项目
+2. 创建新分支: `git checkout -b feature/your-feature`
+3. 提交修改: `git commit -m 'feat: Add some feature'`
+4. 推送分支: `git push origin feature/your-feature`
+5. 提交Pull Request
+
+---
+
+## 📝 更新日志
+
+### v1.9.2-pet (2025-01-09)
+- 🎉 初始发布
+- ✨ 新增4舵机控制系统（13种动作）
+- ✨ 新增慵懒眨眼GIF动画（4种曲线）
+- ✨ 新增18种静态位图表情
+- ⚡ 优化电源管理（分时启动）
+- 🐛 修复LVGL Canvas反色问题
+- 🐛 修复多舵机同时启动导致重启的问题
+- 📝 完善文档和代码注释
+
+---
+
+## 📄 开源协议
+
+本项目继承原项目的 [MIT License](LICENSE)，允许任何人免费使用或用于商业用途。
+
+---
+
+## 🙏 致谢
+
+- **原项目作者**: [78/虾哥](https://github.com/78) - [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32)
+- **开发框架**: [ESP-IDF](https://github.com/espressif/esp-idf) by Espressif
+- **图形库**: [LVGL](https://lvgl.io/) - 轻量级嵌入式图形库
+- **灵感来源**: 各种桌面宠物机器人项目
+
+---
+
+## 📧 联系方式
+
+- **Issues**: [项目Issues页面](https://github.com/hpy666666/xiaozhi-esp32-pet/issues)
+- **原项目QQ群**: 1011329060
+
+---
+
+## ⭐ Star History
+
+如果这个项目对你有帮助，请给个Star支持一下！
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hpy666666/xiaozhi-esp32-pet&type=Date)](https://star-history.com/#hpy666666/xiaozhi-esp32-pet&Date)
+
+---
+
+**Made with ❤️ by hpy666666**
