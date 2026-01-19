@@ -1,12 +1,14 @@
 # Xiaozhi ESP32 Pet - 桌面宠物机器人 🐾
 
-> 基于 [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) 的桌面宠物机器人改进版本
+> 🔗 **Fork 自** [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) | 专注于 **xiaozhi-pet 桌面宠物机器人** 版本的开发和优化
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.4+-blue.svg)](https://github.com/espressif/esp-idf)
 [![LVGL](https://img.shields.io/badge/LVGL-v9-green.svg)](https://lvgl.io/)
 
-**增加了4舵机控制系统和动态表情系统，让小智真正"动"起来！**
+**本项目基于原版 xiaozhi-esp32，专注于桌面宠物机器人的开发。增加了4舵机控制系统和动态表情系统，让小智真正"动"起来！**
+
+> 💡 **注意**: 本仓库只维护 **xiaozhi-pet** 板子配置。如需其他开发板支持（ESP-BOX、M5Stack等），请参考原项目 [xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) 或查看 [docs/other-boards/](docs/other-boards/)。
 
 ## 📸 项目展示
 
@@ -33,6 +35,7 @@
 
 - [新增特性](#-新增特性)
 - [硬件需求](#-硬件需求)
+  - [硬件设计文件](#-硬件设计文件)
 - [快速开始](#-快速开始)
 - [动画制作工具](#-动画制作工具)
 - [常见问题](#-常见问题)
@@ -116,6 +119,49 @@ SERVO_PIN_4 = 12  // 右后腿
 - OLED I2C需要 **4.7kΩ上拉电阻** 到3.3V
 - 麦克风和扬声器保持 **5cm以上距离**
 - 舵机信号线建议添加 **10kΩ上拉电阻**
+
+### 📐 硬件设计文件
+
+本项目提供完整的原理图和PCB设计文件（嘉立创EDA格式），方便大家自制硬件。
+
+#### 设计文件
+
+所有硬件设计文件位于 [`hardware/`](hardware/) 目录：
+
+| 文件 | 说明 |
+|------|------|
+| [`ProDoc_Schematic1_2026-01-19.epro`](hardware/ProDoc_Schematic1_2026-01-19.epro) | 完整原理图工程文件（嘉立创EDA） |
+| [`ProDoc_PCB2_2026-01-19.epro`](hardware/ProDoc_PCB2_2026-01-19.epro) | 完整PCB工程文件（嘉立创EDA） |
+| [`SCH_Schematic1_1-P1_2026-01-19.png`](hardware/SCH_Schematic1_1-P1_2026-01-19.png) | 原理图预览图片 |
+| [`pcb图片.png`](hardware/pcb图片.png) | PCB布局预览图片 |
+
+<details>
+<summary>点击查看原理图和PCB预览</summary>
+
+**原理图预览**
+![原理图](hardware/SCH_Schematic1_1-P1_2026-01-19.png)
+
+**PCB布局预览**
+![PCB布局](hardware/pcb图片.png)
+
+</details>
+
+#### 设计说明
+
+- **设计软件**: 嘉立创EDA
+- **PCB层数**: 2层板
+- **PCB厚度**: 1.6mm
+- **铜箔厚度**: 1oz
+- **制造商**: 推荐使用嘉立创、华秋等国内PCB厂商
+
+#### 关键设计要点
+
+- 每个舵机旁添加 **220μF电解电容**，防止电压跌落
+- OLED I2C需要 **4.7kΩ上拉电阻** 到3.3V
+- 麦克风和扬声器保持 **5cm以上距离**，避免啸叫
+- 舵机信号线建议添加 **10kΩ上拉电阻**
+
+> 💡 **提示**: 所有硬件设计文件均可免费使用，遵循 MIT 开源协议。如果你对硬件设计进行了改进，欢迎提交PR分享！
 
 ---
 
