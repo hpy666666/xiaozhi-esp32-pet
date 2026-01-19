@@ -135,16 +135,17 @@ SERVO_PIN_4 = 12  // 右后腿
 | [`SCH_Schematic1_1-P1_2026-01-19.png`](hardware/SCH_Schematic1_1-P1_2026-01-19.png) | 原理图预览图片 |
 | [`pcb图片.png`](hardware/pcb图片.png) | PCB布局预览图片 |
 
-<details>
-<summary>点击查看原理图和PCB预览</summary>
+#### 原理图和PCB预览
 
-**原理图预览**
+<div align="center">
+
+**原理图**
 ![原理图](hardware/SCH_Schematic1_1-P1_2026-01-19.png)
 
-**PCB布局预览**
+**PCB布局**
 ![PCB布局](hardware/pcb图片.png)
 
-</details>
+</div>
 
 #### 设计说明
 
