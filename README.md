@@ -14,25 +14,23 @@
 
 <div align="center">
 
-### 整体外观
-
-<a href="docs/pet/cover.jpg">
-  <img src="docs/pet/cover.jpg" width="520" alt="项目整体外观"/>
-</a>
-
-### 硬件细节
-
 <table>
   <tr>
-    <td align="center" width="50%">
+    <td align="center" width="33%">
+      <a href="docs/pet/cover.jpg">
+        <img src="docs/pet/cover.jpg" width="240" alt="项目整体外观"/>
+      </a>
+      <br/>整体外观
+    </td>
+    <td align="center" width="33%">
       <a href="docs/pet/hardware-left.jpg">
-        <img src="docs/pet/hardware-left.jpg" width="260" alt="左侧视角 - 舵机布局"/>
+        <img src="docs/pet/hardware-left.jpg" width="240" alt="左侧视角 - 舵机布局"/>
       </a>
       <br/>左侧视角 - 舵机布局
     </td>
-    <td align="center" width="50%">
+    <td align="center" width="33%">
       <a href="docs/pet/hardware-right.jpg">
-        <img src="docs/pet/hardware-right.jpg" width="260" alt="右侧视角 - OLED屏幕"/>
+        <img src="docs/pet/hardware-right.jpg" width="240" alt="右侧视角 - OLED屏幕"/>
       </a>
       <br/>右侧视角 - OLED屏幕
     </td>
