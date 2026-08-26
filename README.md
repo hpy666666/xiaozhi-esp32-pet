@@ -26,13 +26,13 @@
       <a href="docs/pet/hardware-left.jpg">
         <img src="docs/pet/hardware-left.jpg" width="240" alt="左侧视角 - 舵机布局"/>
       </a>
-      <br/>左侧视角 - 舵机布局
+      <br/>左侧视角
     </td>
     <td align="center" width="33%">
       <a href="docs/pet/hardware-right.jpg">
         <img src="docs/pet/hardware-right.jpg" width="240" alt="右侧视角 - OLED屏幕"/>
       </a>
-      <br/>右侧视角 - OLED屏幕
+      <br/>右侧视角
     </td>
   </tr>
 </table>
